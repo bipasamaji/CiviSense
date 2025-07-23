@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    DrainageZoneViewSet, RainfallRecordViewSet, FloodRiskViewSet, predict_flood_risk
+    DrainageZoneViewSet, RainfallRecordViewSet, FloodRiskViewSet, FloodRiskPredictView
 )
 
 router = DefaultRouter()
@@ -11,5 +11,5 @@ router.register('floodrisk', FloodRiskViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('predict/', predict_flood_risk),
+    path('predict/', FloodRiskPredictView.as_view(), name='flood_predict'),
 ]

@@ -1,0 +1,224 @@
+
+CiviSense Backend API Documentation
+===================================
+
+Base URL: http://<your-backend-domain>/api/
+
+---------------------------------------------------------------------
+Authentication
+---------------------------------------------------------------------
+
+1. Login
+POST /api/users/login/
+
+Request:
+{
+  "username": "yourusername",
+  "password": "yourpassword"
+}
+Response:
+{
+  "refresh": "<jwt-refresh-token>",
+  "access": "<jwt-access-token>"
+}
+
+- For all requests below, pass the access token in the Authorization header:
+  Authorization: Bearer <access_token>
+
+---------------------------------------------------------------------
+Users
+---------------------------------------------------------------------
+
+2. List All Users (Admin only)
+GET /api/users/list/
+
+Response:
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "email": "admin@example.com",
+    "is_admin": true
+  },
+  ...
+]
+
+---------------------------------------------------------------------
+Traffic
+---------------------------------------------------------------------
+
+3. List Traffic Zones
+GET /api/traffic/zones/
+
+Response:
+[
+  {
+    "id": 1,
+    "name": "Main Road",
+    "geojson": {...}
+  },
+  ...
+]
+
+4. Create Traffic Zone
+POST /api/traffic/zones/
+{
+  "name": "Airport Road",
+  "geojson": {"type": "Polygon", "coordinates": [...]}
+}
+
+5. List Traffic Records
+GET /api/traffic/records/
+
+6. Create Traffic Record
+POST /api/traffic/records/
+{
+  "zone": 1,
+  "timestamp": "2025-07-21T15:00:00Z",
+  "congestion_level": 7,
+  "avg_speed": 19.5
+}
+
+7. Predict Traffic Congestion (ML)
+POST /api/traffic/predict/
+{
+  "zone_id": 1,
+  "timestamp": "2025-07-21T18:00:00Z"
+}
+Response:
+{
+  "zone_id": 1,
+  "timestamp": "2025-07-21T18:00:00Z",
+  "predicted_congestion": 8
+}
+
+---------------------------------------------------------------------
+Drainage / Flood
+---------------------------------------------------------------------
+
+8. List Drainage Zones
+GET /api/drainage/zones/
+
+9. Create Drainage Zone
+POST /api/drainage/zones/
+{
+  "name": "Sector 9",
+  "elevation": 128.7,
+  "drainage_capacity": 90.5,
+  "geojson": {...}
+}
+
+10. List Rainfall Records
+GET /api/drainage/rainfall/
+
+11. Create Rainfall Record
+POST /api/drainage/rainfall/
+{
+  "zone": 2,
+  "timestamp": "2025-07-21T09:00:00Z",
+  "rainfall_mm": 30.5
+}
+
+12. List Flood Risks
+GET /api/drainage/floodrisk/
+
+13. Create Flood Risk Record
+POST /api/drainage/floodrisk/
+{
+  "zone": 2,
+  "date": "2025-07-21",
+  "risk_level": "High"
+}
+
+14. Predict Flood Risk (ML)
+POST /api/drainage/predict/
+{
+  "zone_id": 2,
+  "rainfall": 64.5
+}
+Response:
+{
+  "zone_id": 2,
+  "predicted_risk": "High"
+}
+
+---------------------------------------------------------------------
+Water Supply
+---------------------------------------------------------------------
+
+15. List Water Zones
+GET /api/water/zones/
+
+16. Create Water Zone
+POST /api/water/zones/
+{
+  "name": "Downtown",
+  "geojson": {...}
+}
+
+17. List Water Supply Records
+GET /api/water/records/
+
+18. Create Water Supply Record
+POST /api/water/records/
+{
+  "zone": 1,
+  "date": "2025-07-21",
+  "supply_hours": 3.5,
+  "avg_pressure": 1.2,
+  "anomaly_flag": false
+}
+
+19. Detect Water Supply Anomaly (ML)
+POST /api/water/detect/
+{
+  "supply_hours": 1.5,
+  "avg_pressure": 0.9
+}
+Response:
+{
+  "anomaly": true
+}
+
+---------------------------------------------------------------------
+Feedback (Citizen Reports)
+---------------------------------------------------------------------
+
+20. List All Feedback
+GET /api/feedback/
+
+21. Submit Feedback
+POST /api/feedback/
+{
+  "user": 1,
+  "type": "water", // "traffic", "water", "drainage"
+  "description": "No water in Sector 6 since morning",
+  "latitude": 23.456,
+  "longitude": 77.123,
+  "resolved": false
+}
+
+22. Update Feedback (Resolve)
+PATCH /api/feedback/{id}/
+{
+  "resolved": true
+}
+
+---------------------------------------------------------------------
+Status Codes
+---------------------------------------------------------------------
+
+- 200 OK: Success
+- 201 Created: New record created
+- 400 Bad Request: Invalid input
+- 401 Unauthorized: Missing or invalid JWT
+- 404 Not Found: Endpoint or resource not found
+
+---------------------------------------------------------------------
+Notes
+---------------------------------------------------------------------
+
+- All endpoints require JWT authentication (except /login/).
+- All timestamps are ISO 8601 (e.g. 2025-07-21T18:00:00Z).
+- geojson: standard GeoJSON for areas/polygons.
+- Seed DB with zones, records, and feedback before testing frontend.
