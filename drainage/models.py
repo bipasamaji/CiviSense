@@ -6,6 +6,9 @@ class DrainageZone(models.Model):
     drainage_capacity = models.FloatField()
     geojson = models.JSONField(null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 class RainfallRecord(models.Model):
     zone = models.ForeignKey(DrainageZone, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()

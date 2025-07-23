@@ -4,6 +4,9 @@ class TrafficZone(models.Model):
     name = models.CharField(max_length=100)
     geojson = models.JSONField(null= True, blank= True)
 
+    def __str__(self):
+        return self.name
+
 class TrafficRecord(models.Model):
     zone = models.ForeignKey(TrafficZone, on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
